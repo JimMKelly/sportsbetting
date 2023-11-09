@@ -8,7 +8,7 @@ var leagues = [ {name: "A League - Australia", key: "soccer_australia_aleague"},
                 {name: "Bundesliga - Germany", key: "soccer_germany_bundesliga"},
                 {name: "Serie A - Italy", key: "soccer_italy_serie_a"},
                 {name: "Ligue 1 - France", key: "soccer_france_ligue_one"}]
-//getData();
+
 start();
 function start() {
     var listItem = document.createElement('option');
@@ -85,6 +85,15 @@ function formatData(data) {
     })
 }
 
+function findBestOdds(game, ind) {
+    bestOdds = 0
+    game.allOdds.forEach((site) => {
+        const siteOdds = site.odds[ind];
+        if (siteOdds > bestOdds) { bestOdds = siteOdds};
+    })
+    return bestOdds;
+}
+
 function createTable() {
     const newTable = document.createElement('table');
     newTable.setAttribute('border', '1');
@@ -114,20 +123,24 @@ function createTable() {
         tbdy.appendChild(tr1);
 
         allGameData.forEach((game, index) => {
-            var tr = document.createElement('tr');
-                var td1 = document.createElement('td');
+            const bestHomeOdds = findBestOdds(game, 0);
+            const bestDrawOdds = findBestOdds(game, 1);
+            const bestAwayOdds = findBestOdds(game, 2);
+
+            let tr = document.createElement('tr');
+                let td1 = document.createElement('td');
                 td1.classList.add("head1");
                 td1.innerHTML = index + 1;
-                var td2 = document.createElement('td');
+                let td2 = document.createElement('td');
                 td2.classList.add("head1");
                 td2.innerHTML = game.gameTime;
-                var td3 = document.createElement('td');
+                let td3 = document.createElement('td');
                 td3.classList.add("head1");
                 td3.innerHTML = game.homeTeam;
-                var td4 = document.createElement('td');
+                let td4 = document.createElement('td');
                 td4.classList.add("head1");
                 td4.innerHTML = "Draw";
-                var td5 = document.createElement('td');
+                let td5 = document.createElement('td');
                 td5.classList.add("head1");
                 td5.innerHTML = game.awayTeam;
 
@@ -138,21 +151,31 @@ function createTable() {
                 tr.appendChild(td5);
                 tbdy.appendChild(tr);
 
-            //var tr2 = document.createElement('tr');
+                game.allOdds.forEach((site) => {
+                    const homeOdds = site.odds[0];
+                    const drawOdds = site.odds[1];
+                    const awayOdds = site.odds[2];
 
-                game.allOdds.forEach((site, index2) => {
                     var tr_ = document.createElement('tr');
-                        var td_1 = document.createElement('td');
-                        //td_1.innerHTML = index2 + 1;
+                        let td_1 = document.createElement('td');
                         td_1.innerHTML = "";
-                        var td_2 = document.createElement('td');
+                        let td_2 = document.createElement('td');
                         td_2.innerHTML = site.siteName;
-                        var td_3 = document.createElement('td');
-                        td_3.innerHTML = site.odds[0];
-                        var td_4 = document.createElement('td');
-                        td_4.innerHTML = site.odds[2];
-                        var td_5 = document.createElement('td');
-                        td_5.innerHTML = site.odds[1];
+                        let td_3 = document.createElement('td');
+                        td_3.innerHTML = homeOdds;
+                        if (homeOdds == bestHomeOdds) {
+                            td_3.classList.add("bestOdds");
+                        }
+                        let td_4 = document.createElement('td');
+                        td_4.innerHTML = drawOdds;
+                        if (drawOdds == bestDrawOdds) {
+                            td_4.classList.add("bestOdds");
+                        }
+                        let td_5 = document.createElement('td');
+                        td_5.innerHTML = awayOdds;
+                        if (awayOdds == bestAwayOdds) {
+                            td_5.classList.add("bestOdds");
+                        }
                         
                         tr_.appendChild(td_1);
                         tr_.appendChild(td_2);
@@ -160,10 +183,8 @@ function createTable() {
                         tr_.appendChild(td_4);
                         tr_.appendChild(td_5);
 
-                        //tr2.appendChild(tr_);
                         tbdy.appendChild(tr_);
                 })
-                
                 
         })
 

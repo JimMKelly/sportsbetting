@@ -6,6 +6,7 @@
     --light: #fff;
     --medium: rgb(112, 111, 111);
     --shadow: 0 1px 5px rgba(104, 104, 104, 0.8);
+    --highlight: rgb(26, 194, 40);
 }
 
 * {
@@ -83,6 +84,10 @@ button:active, .selectedBtn {
     flex-direction: column;
     align-self: center;
     font-size: 1.5rem;
+}
+
+.bestOdds {
+    color: var(--highlight);
 }
 
 .amountToBet {
