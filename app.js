@@ -2,14 +2,17 @@ const matchesTable = document.getElementById("matches");
 const leagueList = document.getElementById("leagueList");
 const apiKey = '094d22a8afba0d142c92f7af1d582e36';
 var allGameData = [];
+var allArbitrageBets = [];
 var leagues = [ {name: "A League - Australia", key: "soccer_australia_aleague"}, 
                 {name: "Priemier League - England", key: "soccer_epl"}, 
                 {name: "La Liga - Spain", key: "soccer_spain_la_liga"},
                 {name: "Bundesliga - Germany", key: "soccer_germany_bundesliga"},
                 {name: "Serie A - Italy", key: "soccer_italy_serie_a"},
                 {name: "Ligue 1 - France", key: "soccer_france_ligue_one"}]
+var isArbitrage = false;
 
 start();
+
 function start() {
     var listItem = document.createElement('option');
     listItem.innerHTML = "-- Select league --";
@@ -23,15 +26,8 @@ function start() {
         document.getElementById("leagueList").appendChild(listItem);
     })
 }
+
 function selectLeague() {
-    //A League - soccer_australia_aleague
-    //Ligue 1 - France: soccer_france_ligue_one
-    //FA Cup - soccer_fa_cup
-    //EPL: soccer_epl
-    //Bundesliga - Germany: soccer_germany_bundesliga
-    //Serie A - Italy - soccer_italy_serie_a
-    //La Liga - Spain - soccer_spain_la_liga
-    console.log(leagueList.value)
     getData(leagueList.value);
 }
 
@@ -65,7 +61,6 @@ function convertTime(time) {
 }
 
 function formatData(data) {
-    console.log(data);
 
     data.data.forEach(game => {
         const gameTime = convertTime(game.commence_time);
@@ -86,12 +81,57 @@ function formatData(data) {
 }
 
 function findBestOdds(game, ind) {
-    bestOdds = 0
+    let bestOdds = 0
+    let bettingCompany = ""
     game.allOdds.forEach((site) => {
         const siteOdds = site.odds[ind];
-        if (siteOdds > bestOdds) { bestOdds = siteOdds};
+        if (siteOdds > bestOdds) { 
+            bestOdds = siteOdds;
+            bettingCompany = site.siteName;
+        };
+        
     })
-    return bestOdds;
+    return {bestOdds, bettingCompany};
+}
+
+function checkForArbitrage(game) {
+    
+    const homeBetInfo = findBestOdds(game, 0);
+    const bestHomeOdds = homeBetInfo.bestOdds;
+    const homeBettingCo = homeBetInfo.bettingCompany;
+    const drawBetInfo = findBestOdds(game, 1);
+    const bestDrawOdds = drawBetInfo.bestOdds;
+    const drawBettingCo = drawBetInfo.bettingCompany;
+    const awayBetInfo = findBestOdds(game, 0);
+    const bestAwayOdds = awayBetInfo.bestOdds;
+    const awayBettingCo = awayBetInfo.bettingCompany;
+    const homeTeam = game.homeTeam;
+    const awayTeam = game.awayTeam;
+
+    const amountTotal = 1000;
+
+    let bet1 = (amountTotal / (1 + bestHomeOdds/bestDrawOdds + bestHomeOdds/bestAwayOdds))
+    let bet2 = (amountTotal / (1 + bestDrawOdds/bestHomeOdds + bestDrawOdds/bestAwayOdds))
+    let bet3 = (amountTotal / (1 + bestAwayOdds/bestHomeOdds + bestAwayOdds/bestDrawOdds))
+    const total = bet1 + bet2 + bet3;
+    const diff = total - amountTotal;
+    
+    if (diff > 0){
+        isArbitrage = true;
+        homeBet = {homeTeam, bestHomeOdds, homeBettingCo};
+        drawBet = {bestDrawOdds, drawBettingCo};
+        awayBet = {awayTeam, bestAwayOdds, awayBettingCo};
+        arbitrageBet = {homeBet, drawBet, awayBet};
+
+        allArbitrageBets.push(arbitrageBet)
+
+        console.log("YES");
+        console.log("Bet1: $" + bet1 + " on " + homeTeam + " with odds of " + bestHomeOdds)
+        console.log("Bet2: $" + bet2 + " on a draw between " + homeTeam + " and " + awayTeam + " with odds of " + bestDrawOdds)
+        console.log("Bet3: $" + bet3 + " on " + awayTeam + " with odds of " + bestAwayOdds)
+        console.log("Profit would be " + diff.toFixed(2))
+    }
+
 }
 
 function createTable() {
@@ -123,9 +163,10 @@ function createTable() {
         tbdy.appendChild(tr1);
 
         allGameData.forEach((game, index) => {
-            const bestHomeOdds = findBestOdds(game, 0);
-            const bestDrawOdds = findBestOdds(game, 1);
-            const bestAwayOdds = findBestOdds(game, 2);
+            checkForArbitrage(game);
+            const bestHomeOdds = findBestOdds(game, 0).bestOdds;
+            const bestDrawOdds = findBestOdds(game, 1).bestOdds;
+            const bestAwayOdds = findBestOdds(game, 2).bestOdds;
 
             let tr = document.createElement('tr');
                 let td1 = document.createElement('td');
