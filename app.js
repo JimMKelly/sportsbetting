@@ -103,13 +103,13 @@ function checkForArbitrage(game) {
     const drawBetInfo = findBestOdds(game, 1);
     const bestDrawOdds = drawBetInfo.bestOdds;
     const drawBettingCo = drawBetInfo.bettingCompany;
-    const awayBetInfo = findBestOdds(game, 0);
+    const awayBetInfo = findBestOdds(game, 2);
     const bestAwayOdds = awayBetInfo.bestOdds;
     const awayBettingCo = awayBetInfo.bettingCompany;
     const homeTeam = game.homeTeam;
     const awayTeam = game.awayTeam;
 
-    const amountTotal = 1000;
+    const amountTotal = 100;
 
     let bet1 = (amountTotal / (1 + bestHomeOdds/bestDrawOdds + bestHomeOdds/bestAwayOdds))
     let bet2 = (amountTotal / (1 + bestDrawOdds/bestHomeOdds + bestDrawOdds/bestAwayOdds))
@@ -118,18 +118,13 @@ function checkForArbitrage(game) {
     const diff = total - amountTotal;
     
     if (diff > 0){
-        isArbitrage = true;
-        homeBet = {homeTeam, bestHomeOdds, homeBettingCo};
-        drawBet = {bestDrawOdds, drawBettingCo};
-        awayBet = {awayTeam, bestAwayOdds, awayBettingCo};
-        arbitrageBet = {homeBet, drawBet, awayBet};
 
-        let line1 = ("\nBet1: $" + bet1.toFixed(2) + " on " + homeTeam + " with odds of " + bestHomeOdds)
-        let line2 = ("\nBet2: $" + bet2.toFixed(2) + " on a draw between " + homeTeam + " and " + awayTeam + " with odds of " + bestDrawOdds)
-        let line3 = ("\nBet3: $" + bet3.toFixed(2) + " on " + awayTeam + " with odds of " + bestAwayOdds)
+        let line1 = ("\nBet1: $" + bet1.toFixed(2) + " on " + homeTeam + " with " + homeBettingCo + ". The odds are " + bestHomeOdds)
+        let line2 = ("\nBet2: $" + bet2.toFixed(2) + " on a draw between " + homeTeam + " and " + awayTeam + " with " + drawBettingCo + ". The odds are " + bestDrawOdds)
+        let line3 = ("\nBet3: $" + bet3.toFixed(2) + " on " + awayTeam + " with " + awayBettingCo + ". The odds are " + bestAwayOdds)
         let line4 = ("\nProfit would be " + diff.toFixed(2))
 
-        arbitrageMessages.innerHTML += "----------------------------------------------------------------------\nThere is an Arbitrage Bet!!!!";
+        arbitrageMessages.innerHTML += "----------------------------------------------------------------------\nThere is an Arbitrage Bet!!!!\nWith a bet of $" + amountTotal + "\n";
         arbitrageMessages.innerHTML += line1 + "\n"; 
         arbitrageMessages.innerHTML += line2 + "\n";
         arbitrageMessages.innerHTML += line3 + "\n";
