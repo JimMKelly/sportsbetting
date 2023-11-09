@@ -1,3 +1,4 @@
+const arbitrageMessages = document.getElementById("arbitrageBets");
 const matchesTable = document.getElementById("matches");
 const leagueList = document.getElementById("leagueList");
 const apiKey = '094d22a8afba0d142c92f7af1d582e36';
@@ -123,13 +124,17 @@ function checkForArbitrage(game) {
         awayBet = {awayTeam, bestAwayOdds, awayBettingCo};
         arbitrageBet = {homeBet, drawBet, awayBet};
 
-        allArbitrageBets.push(arbitrageBet)
+        let line1 = ("\nBet1: $" + bet1.toFixed(2) + " on " + homeTeam + " with odds of " + bestHomeOdds)
+        let line2 = ("\nBet2: $" + bet2.toFixed(2) + " on a draw between " + homeTeam + " and " + awayTeam + " with odds of " + bestDrawOdds)
+        let line3 = ("\nBet3: $" + bet3.toFixed(2) + " on " + awayTeam + " with odds of " + bestAwayOdds)
+        let line4 = ("\nProfit would be " + diff.toFixed(2))
 
-        console.log("YES");
-        console.log("Bet1: $" + bet1 + " on " + homeTeam + " with odds of " + bestHomeOdds)
-        console.log("Bet2: $" + bet2 + " on a draw between " + homeTeam + " and " + awayTeam + " with odds of " + bestDrawOdds)
-        console.log("Bet3: $" + bet3 + " on " + awayTeam + " with odds of " + bestAwayOdds)
-        console.log("Profit would be " + diff.toFixed(2))
+        arbitrageMessages.innerHTML += "----------------------------------------------------------------------\nThere is an Arbitrage Bet!!!!";
+        arbitrageMessages.innerHTML += line1 + "\n"; 
+        arbitrageMessages.innerHTML += line2 + "\n";
+        arbitrageMessages.innerHTML += line3 + "\n";
+        arbitrageMessages.innerHTML += line4 + "\n----------------------------------------------------------------------\n";
+
     }
 
 }
