@@ -232,3 +232,7 @@ function createTable() {
     newTable.appendChild(tbdy);
     matchesTable.appendChild(newTable);
 }
+
+function reset() {
+    location.reload();
+}
