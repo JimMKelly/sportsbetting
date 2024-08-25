@@ -117,7 +117,7 @@ function checkForArbitrage(game) {
     const total = bet1 + bet2 + bet3;
     const diff = total - amountTotal;
     
-    if (diff > 0){
+    if (diff > 0.01){
 
         let line1 = ("\nBet1: $" + bet1.toFixed(2) + " on " + homeTeam + " with " + homeBettingCo + ". The odds are " + bestHomeOdds)
         let line2 = ("\nBet2: $" + bet2.toFixed(2) + " on a draw between " + homeTeam + " and " + awayTeam + " with " + drawBettingCo + ". The odds are " + bestDrawOdds)
